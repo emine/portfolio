@@ -1,4 +1,20 @@
 
+temporaire
+----------
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
+          <Route path="/picture" element={<PictureScreen />} />
+          <Route path="/event" element={<EventScreen />} />
+          <Route path="/my_events" element={<MyEventsScreen />} />
+          <Route path="/friend_events" element={<FriendEventsScreen />} />
+          <Route path="/friends" element={<FriendsScreen />} />
+
+
+
+
+Reference:
+https://betterprogramming.pub/build-a-realtime-pwa-with-react-99e7b0fd3270
+
 Creation & Usage
 ----------------
 
@@ -49,4 +65,9 @@ Deployment
 ----------
 consider Vercel (previously now.sh)
 
+
+Project
+-------
+build "portfolio" as a PWA react web app with the same functionalities as react native "demo" project (except taking picture)
+and merge the features from "interv" app (Routes, bootstrap). Use only function components.  
 
