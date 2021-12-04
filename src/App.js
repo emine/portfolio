@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom" ;
 
 import LoginScreen from './screens/LoginScreen.js' ; 
 import HomeScreen from './screens/HomeScreen.js' ; 
+import ContextProvider from "./ContextProvider" ;
 
 //import {RegisterScreen} from './screens/RegisterScreen.js' ; 
 //import PictureScreen from './screens/PictureScreen.js' ;   // WATCH OUT this is a functional component 
@@ -14,12 +15,14 @@ import HomeScreen from './screens/HomeScreen.js' ;
 
 function App() {
   return (
-   <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/login" element={<LoginScreen />} />
-        </Routes>
-    </BrowserRouter>        
+    <ContextProvider>
+        <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomeScreen />} />
+              <Route path="/login" element={<LoginScreen />} />
+            </Routes>
+        </BrowserRouter>        
+    </ContextProvider>     
   );
 }
 
