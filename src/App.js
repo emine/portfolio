@@ -2,6 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom" ;
 
 import LoginScreen from './screens/LoginScreen.js' ; 
+import MyEventsScreen from './screens/MyEventsScreen.js' ; 
+import EventScreen from './screens/EventScreen.js' ; 
+import PictureScreen from './screens/PictureScreen.js' ; 
+
+
 import HomeScreen from './screens/HomeScreen.js' ; 
 import ContextProvider from "./ContextProvider" ;
 
@@ -18,8 +23,11 @@ function App() {
     <ContextProvider>
         <BrowserRouter>
             <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/login" element={<LoginScreen />} />
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/login" element={<LoginScreen />} />
+                <Route path="/my_events/:type" element={<MyEventsScreen />} />
+                <Route path="/event" element={<EventScreen />} />
+                <Route path="/picture" element={<PictureScreen />} />
             </Routes>
         </BrowserRouter>        
     </ContextProvider>     

@@ -1,62 +1,52 @@
-import React, { Component} from 'react';
-import { View, ScrollView, Alert } from 'react-native';
-import { Text, Button, Divider } from 'react-native-elements';
-import { Avatar, ListItem } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { useContext, useState, useEffect} from 'react';
+import NewEvent from './NewEvent.js' ; 
 
-import {NewEvent} from './NewEvent.js' ; 
+import {Button, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Container} from '@mui/material';
+import { Add, ChevronRight} from '@mui/icons-material';
+import TopAppBar from './TopAppBar' ;
+
+import axios from 'axios';
+
+import { useNavigate, useParams } from 'react-router-dom';
 
 import * as Config from '../Config.js'; 
 import * as Helper from '../Helper.js'; 
-import * as Localization from 'expo-localization';
-import X from 'i18n-js';
-// Set the locale once at the beginning of your app.
-X.locale = Localization.locale;
-X.fallbacks = true;
-X.translations = Config.Lang ;
 
 import AppContext from '../AppContext' ;
 
-export class MyEventsScreen extends Component{
 
-    static contextType = AppContext ;    
-    
-    constructor(props) {
-        super(props);
-        this.state = {
-            events: [],
-            addTrip : false ,
-        };
-    }
-    
-    
 
-    async componentDidMount() {
-        console.log('component did mount invoked') ;
-        const jsonValue = await AsyncStorage.getItem('user') ;
-        this.context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
-        console.log(this.context.user) ;
+function MyEventsScreen () {
+    const context = useContext(AppContext) ;
+    const [events, setEvents] = useState([]) ;
+    const [addTrip, setAddTrip] = useState(false) ;
+    const navigate = useNavigate();
+    const {type} = useParams() ;
+
+    useEffect(() => {
+        console.log("MyEventsScreen useEffect invoked") ;
+        const jsonValue = localStorage.getItem('user') ;
+        context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
+        console.log(context.user) ;
         
-        this._unsubscribe = this.props.navigation.addListener('focus', () => {
-                this.listEvents() ;
-            });
-        this.listEvents() ;
-    }
+      //  this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      //          this.listEvents() ;
+      //      });
+        listEvents() ;
+    }, [])
     
-    listEvents = () => {
+    const listEvents = () => {
         console.log('listEvent invoked') ;
-        if (this.context.state.user) {
+        if (context.user) {
             console.log('post axios') ;
-            console.log(this.context.state.user) ;
-            
-            axios.post(Config.apiUrl + '/events', this.context.state.user)
+            console.log(context.user) ;
+            let link = type === 'mine' ? '/events' : '/friend_events' ;
+            axios.post(Config.apiUrl + link, context.user)
             .then( (res) => {
                 if (res.data.success) {
                    // console.log('listEvents') ;
                    // console.log(res.data.data) ;
-                    this.setState({ events: res.data.data}) ;
+                    setEvents(res.data.data) ;
                 } else {
                     console.log(res.data.error) ;
                 }
@@ -65,90 +55,78 @@ export class MyEventsScreen extends Component{
     }
 
 
-    componentWillUnmount() {
-        this._unsubscribe();   
-     }
+   // componentWillUnmount() {
+   //     this._unsubscribe();   
+   //  }
 
     
-    logout = async () => {
-        await AsyncStorage.removeItem('user') ;
-        this.context.setUser(null);
-        this.props.navigation.navigate('home') ;
-    }
-    
-    eventScreen = (event) => {
+    const eventScreen = (event) => {
         console.log('EVENT') ;
         console.log(event) ;
-        this.context.setEvent(event) ;
-        this.props.navigation.navigate('event') ;
+        context.setEvent(event) ;
+        context.setType(type) ;
+        navigate('/event') ;
     }
     
     // function passed to child component NewEvent
-    addTrip = (val) =>  {
-        this.setState({addTrip: val}) ;
-        if (!this.state.addTrip) {
-            this.listEvents() ;
+    const actionAddTrip = (val) =>  {
+        setAddTrip(val) ;
+        if (addTrip) {
+            listEvents() ;
         }
     }
     
-    openInput = () => {
-        this.setState({addTrip: true})
+    const openInput = () => {
+        setAddTrip(true)
     }
-    
 
-    render() {
-      //  console.log(this.context.state.user) ;
+    return (
+        
+        <Container maxWidth="sm">
+            <TopAppBar 
+                title= {type === 'mine' ? "My Events" : "Friend Events"} 
+                returnLink="/"
+                />
+            { type === 'mine' && context.user != null  && !addTrip &&
+                <Button 
+                    startIcon={<Add />}
+                    onClick={openInput}
+                    variant="outlined"
+                    >Add Event
+                </Button>    
+            }
 
-        return (
-            <View>
-                { this.context.state.user != null  && !this.state.addTrip &&
-                    <Button
-                        icon={
-                            <Icon
-                            name="plus"
-                            size={Config.iconBigSize}
-                            color={Config.iconColor}
-                            />
+            { type === 'mine' && context.user != null  && addTrip &&
+                  <NewEvent addTrip = {actionAddTrip} /> 
+            }
+
+            { context.user != null  && !addTrip &&
+                <List>
+                {events.map( (item, i) => 
+                    <ListItem
+                        key = {i}
+                        onClick={() => eventScreen(item)}
+                        secondaryAction={
+                            <IconButton edge="end">
+                                <ChevronRight />
+                            </IconButton>
                         }
-                        title={' ' + X.t("Add Event")}
-                        onPress={this.openInput}
-                        type='clear'
-                        buttonStyle = {Config.buttonStyle}
-                        titleStyle = {Config.buttonTitleStyle}
-                    />    
+                        >
+                        <ListItemAvatar>
+                            <Avatar src={Config.apiUrl + '/images/' + item.url} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={ type==='mine' ? item.name : item.friend[0].name + ': ' + item.name}
+                            secondary={Helper.dateFr(item.date)}
+                        />
+                    </ListItem>
+                    )
                 }
+                </List>
+            }
 
-                { this.context.state.user != null  && this.state.addTrip &&
-                    <NewEvent addTrip = {this.addTrip} /> 
-                }
-                
-                { this.context.state.user != null  && !this.state.addTrip &&
-                    <ScrollView
-                        style={{marginBottom : 100}}
-                    >
-                    {this.state.events.map( (item, i) => 
-                            <ListItem 
-                                key={i} 
-                                bottomDivider
-                                onPress={() => this.eventScreen(item)}
-                            >
-                            <Avatar 
-                                rounded title={item.name.substring(0,2)}  
-                                containerStyle={{ color: 'white', backgroundColor: 'grey'}}
-                                source={{uri: Config.apiUrl + '/images/' + item.url}} 
-                                />
-                               <ListItem.Content>
-                                   <ListItem.Title>{item.name}</ListItem.Title>
-                                   <ListItem.Subtitle style={{color: 'grey', fontSize: 12}}>{Helper.dateFr(item.date)}</ListItem.Subtitle>
-                               </ListItem.Content>
-                               <ListItem.Chevron />
-                           </ListItem>
-                        )
-                    }
-                    </ScrollView>
-                }
-                
-            </View>
-        );
-    } 
+        </Container>
+    );
 }
+
+export default MyEventsScreen ;

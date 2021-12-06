@@ -14,6 +14,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
+import TopAppBar from './TopAppBar' ;
 
 import { ArrowCircleUp, Login, Image, PermMedia, Group, Logout, Delete } from '@mui/icons-material';
 
@@ -65,6 +66,10 @@ function HomeScreen()  {
     
     return (
         <Container maxWidth="sm">
+        <TopAppBar 
+            title="Home"
+            returnLink={false}
+            />
         <Box
             component="form"
             sx={{
@@ -96,7 +101,7 @@ function HomeScreen()  {
                 </ListItem>
             }
             { context.user != null  &&
-                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_events">
+                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_events/mine">
                     <ListItemButton>
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <Image/>
@@ -106,7 +111,7 @@ function HomeScreen()  {
                 </ListItem>
             }
             { context.user != null  &&
-                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/friend_events">
+                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_events/friends">
                     <ListItemButton>
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <PermMedia/>

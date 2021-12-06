@@ -1,95 +1,69 @@
-import React, { Component} from 'react';
-import { View, Alert } from 'react-native';
-import { Text, Button, Divider, Input } from 'react-native-elements';
+import React, { useContext, useState, useEffect} from 'react';
+import {Button, Box, TextField, Container} from '@mui/material';
+
 import axios from 'axios';
 
 import * as Config from '../Config.js'; 
 import * as Helper from '../Helper.js'; 
-import * as Localization from 'expo-localization';
-import X from 'i18n-js';
-// Set the locale once at the beginning of your app.
-X.locale = Localization.locale;
-X.fallbacks = true;
-X.translations = Config.Lang ;
-
-const input = React.createRef();
-
 import AppContext from '../AppContext' ;
 
-export class NewEvent extends Component{
 
-    static contextType = AppContext ;    
-    
-    constructor(props) {
-        super(props);
-        this.state = {
-            message: '',
-            eventName: ''
-        };
-    }
-    
-    addEvent = () => {
-        if (this.state.eventName.trim() == '') {
-            Alert.alert(X.t("missing event")) ;
-            input.current.focus();
+function NewEvent(props) {
+    const context = useContext(AppContext) ;
+    const [message, setMessage] = useState('') ;
+    const [eventName, setEventName] = useState('') ;
+
+    const addEvent = () => {
+        if (eventName.trim() == '') {
+            alert("missing event") ;
             return ;
         } 
-        axios.post(Config.apiUrl + '/addEvent', { id_user: this.context.state.user.id, name: this.state.eventName})
+        axios.post(Config.apiUrl + '/addEvent', { id_user: context.user.id, name: eventName})
         .then(res => {
             if (res.data.success) {
-                this.props.addTrip(false) ;
+                props.addTrip(false) ;
             } else {
-                this.setState( {message : res.data.error} ) ;
-                  Alert.alert(
-                    X.t("Error"),
-                    res.data.error
-                    ) ;
+                setMessage(res.data.error) ;
+                alert("Error " + res.data.error) ;
             }
         })
     }    
    
     
-    cancelEvent = () =>  {
-        this.props.addTrip(false) ;
+    const cancelEvent = () =>  {
+        props.addTrip(false) ;
     }
        
     
-    render() {
-      //  console.log(this.context.state.user) ;
 
-        return (
-            <View style={{ flexDirection:"column"}}>
-                    <Text 
-                        h3 
-                        h3Style={{padding: '5%', textAlign : 'center'}}
-                    >
-                    {X.t("Event")}
-                    </Text>                
+    return (
+        <Container maxWidth="sm">
+        <h3>Event</h3>
+            <Box
+                component="form"
+                sx={{
+                  '& .MuiTextField-root': { m: 1, width: '25ch' },
+                }}
+                noValidate
+                autoComplete="off"
+            >
+                <div>
+                    <TextField 
+                        required
+                        label="New Event" 
+                        variant="standard" 
+                        onChange={(ev) => setEventName(ev.target.value)} 
+                        autoFocus
+                    />
+                </div>
 
-                    <Input
-                        ref={input}
-                        autoFocus={true}
-                        placeholder={X.t("New Event")}
-                        onChangeText={(value) => this.setState({eventName: value})}
-                    />                
-                    <View style={{ flexDirection:"row", justifyContent: 'center'}}>
-                        <Button
-                            title={X.t("Add")}
-                            onPress={this.addEvent}
-                            containerStyle= {{margin:'5%'}}
-                            buttonStyle = {Config.buttonStyle}
-                            titleStyle = {{color:"white"}}
-                        />
-                        <Button
-                            title={X.t("cancel")}
-                            type="outline"
-                            onPress={this.cancelEvent}
-                            containerStyle= {{margin:'5%'}}
-                            buttonStyle = {Config.buttonStyle}
-                            titleStyle = {Config.buttonTitleStyle}
-                        />
-                    </View>
-            </View>
-        );
-    } 
+                
+                <Button variant="outlined" onClick={ () => addEvent()}>Add</Button>
+                <Button variant="outlined" onClick={ () => cancelEvent()}>Cancel</Button>
+            </Box>    
+        </Container>
+    );
+     
 }
+
+export default NewEvent ;

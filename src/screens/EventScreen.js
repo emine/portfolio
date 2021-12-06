@@ -1,175 +1,107 @@
-import React, { Component} from 'react';
-import { View, ScrollView, Alert } from 'react-native';
-import { Text, Button, Divider } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useContext, useEffect} from 'react';
+
+import { Add, Delete} from '@mui/icons-material';
+import {Button, Container} from '@mui/material';
+
+
 import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
-import { Image } from 'react-native-elements';
-//import { Dimensions } from 'react-native';
-import GridImageView from 'react-native-grid-image-viewer';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import ImageGallery from 'react-image-gallery';
+import "react-image-gallery/styles/css/image-gallery.css";
 
 import * as Helper from '../Helper.js'; 
-import * as Localization from 'expo-localization';
-import X from 'i18n-js';
+import TopAppBar from './TopAppBar' ;
+import { useNavigate } from 'react-router-dom';
 
-// Set the locale once at the beginning of your app.
-X.locale = Localization.locale;
-X.fallbacks = true;
-X.translations = Config.Lang ;
-
-//const window = Dimensions.get("window");    
-//const screen = Dimensions.get("screen");
-
-
-
-export class EventScreen extends Component{
-
-    static contextType = AppContext ;    
-    
-    constructor(props) {
-        super(props);
-        this.state = {
-          //  dimensions: {window, screen},
-            pictures: [],
-            grid_pictures: []
-        };
-    }
-    /*
-    onChangeDimensions = ({ window, screen }) => {
-        this.setState({ dimensions: { window, screen} });
-    };
-     * 
-     */
+function EventScreen() {
+    const context = useContext(AppContext) ;
+    const [pictures, setPictures] = useState([]) ;  
+    const navigate = useNavigate();
  
     
-    listPictures = () => {
+    const listPictures = () => {
         console.log('listPictures invoked') ;
-        axios.post(Config.apiUrl + '/pictures', this.context.state.event)
+        axios.post(Config.apiUrl + '/pictures', context.event)
         .then( (res) => {
             if (res.data.success) {
                 console.log('listPictures') ;
                 console.log(res.data.data) ;
-                this.setState({ pictures: res.data.data}) ;
-                var grid_pictures = this.state.pictures.map( (item, i) => {
-                    return {image: Config.apiUrl + '/images/' + item.url}
-                })
-                this.setState({ grid_pictures: grid_pictures}) ;
-                console.log(this.state.grid_pictures) ;
-            //    this.context.setPictures(res.data.data) ;
+                setPictures(res.data.data) ;
             } else {
                 console.log(res.data.error) ;
             }
         })
     }        
     
-
-    async componentDidMount() {
-        console.log('component did mount invoked') ;
-        const jsonValue = await AsyncStorage.getItem('user') ;
-        this.context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
-     //   Dimensions.addEventListener("change", this.onChangeDimensions);
-        this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.listPictures() ;
-        });
-        this.listPictures() ;
-        
-        
+    useEffect(() => { 
+        console.log('useeffect invoked') ;
+        const jsonValue = localStorage.getItem('user') ;    // USEFULL ??? TODO
+        context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
+        listPictures() ;
         //this.props.navigation.setOptions({
         //    headerTitle: this.context.event.name
         //})
+    },[]) 
+    
+
+    const isOwner = () => {
+        console.log(context.user) ;
+        return (context.user.id === context.event.id_user) ;
     }
     
-        
-    
-    componentWillUnmount() {
-       // Dimensions.removeEventListener("change", this.onChange);
-        this._unsubscribe();
+    const isEmpty = () => {
+        return (pictures.length === 0) ;
     }
     
-    isOwner = () => {
-        console.log(this.context.state) ;
-        return (this.context.state.user.id == this.context.state.event.id_user) ;
-    }
     
-    isEmpty = () => {
-        return (this.state.pictures.length == 0) ;
-    }
-    
-    actionDeleteEvent = () => {
-        Alert.alert(
-            X.t("Warning"),
-            X.t("This event and associated pictures will be deleted"),
-            [
-              {
-                text: X.t("cancel"),
-                style: "cancel"
-              },
-              { text: "OK", onPress: () => this.deleteEvent() }
-            ]
-          );
+    const actionDeleteEvent = () => {
+        if (window.confirm("This event and associated pictures will be deleted")) {
+              deleteEvent() ;
+        }      
     }  
         
     
-    deleteEvent = () => {        
-         axios.post(Config.apiUrl + '/deleteEvent', this.context.state.event)
+    const deleteEvent = () => {        
+         axios.post(Config.apiUrl + '/deleteEvent', context.event)
         .then( (res) => {
             if (res.data.success) {
-               this.props.navigation.navigate('myevents')
+               navigate('/my_events/' + context.type )
             } else {
                 console.log(res.data.error) ;
             }
         })
     }
     
- 
+    const addPicture = () => {
         
-    render() {
+    }
+ 
+    return (
+        <Container>
+        <TopAppBar 
+            title={context.event.name} 
+            returnLink={"/my_events/" + context.type}
+            />
+            {isOwner() &&
+                <Button variant="outlined" startIcon={<Add />} onClick={ () => navigate('/picture')}>Add Picture</Button>
+            }
+            {isOwner() && 
+                <Button sx={{color: 'error.main'}} variant="outlined" startIcon={<Delete />} onClick={ () => actionDeleteEvent()}>Delete this event</Button> 
+            }     
+            <ImageGallery 
+                items={pictures.map( (item, i) => {
+                    return {original: Config.apiUrl + '/images/' + item.url,
+                            thumbnail: Config.apiUrl + '/images/' + item.url
 
-        return (
-            <View style={{ flex: 1}}>
-                {this.isOwner() &&
-                <Button
-                    icon={
-                        <Icon
-                          name="plus"
-                          size={25}
-                          color="#60ace8"
-                        />
-                      }
-                    title={' ' + X.t("Add Picture")}
-                    buttonStyle = {Config.buttonStyle}
-                    titleStyle={Config.buttonTitleStyle}
-                    type='clear'
-                    onPress={() => this.props.navigation.navigate('picture')}
-                />    
-                }
-                {this.isOwner()  &&
-                <Button
-                    icon={
-                        <Icon
-                          name="trash"
-                          size={25}
-                          color="red"
-                        />
-                      }
-                    title={' ' + X.t("Delete this event")}
-                    buttonStyle = {{color: 'red', margin: 10, borderColor: 'red'}}
-                    titleStyle={{color: 'red'}}
-                    titleStyle={Config.buttonTitleStyle}
-                    type='clear'
-                    onPress={() => this.actionDeleteEvent()}
-                />    
-                }               
-               
-                <GridImageView data={this.state.pictures.map( (item, i) => {
-                    return {image: Config.apiUrl + '/images/' + item.url}
-                })} />
-               
-                
-            </View>
-        );
-    } 
+                        } ;
+                })}
+                thumbnailHeight = "50px"
+                thumbnailWidth = "50px"
+            />
+        </Container>
+    );
 
 }
+export default EventScreen ;

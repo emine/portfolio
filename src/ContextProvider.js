@@ -6,24 +6,19 @@ import AppContext from "./AppContext" ;
 
 
 function ContextProvider({children}) {
-    const [user, setUserState] = useState(null) ;
-    const [event, setEventState] = useState(null) ;
+    const [user, setUser] = useState(null) ;
+    const [event, setEvent] = useState(null) ;
+    const [type, setType] = useState('mine') ;   // 'mine' or 'friend'
     
-    const setUser = (value) => {
-        setUserState(value) ;
-    }
-    
-    const setEvent = (value) => {
-        setEventState(value) ;
-    }
-       
     return (
         <AppContext.Provider
             value={{
                 user: user,
                 event: event,
-                setUser: setUser,
-                setEvent: setEvent,
+                type: type,
+                setUser: (value) => setUser(value),
+                setEvent: (value) => setEvent(value),
+                setType: (value) => setType(value)
             }}
         >
         {children}    
