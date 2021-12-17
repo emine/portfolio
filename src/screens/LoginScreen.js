@@ -10,7 +10,7 @@ import AppContext from '../AppContext' ;
 
 import { useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
+//import axios from 'axios';
 //import uuid from "uuid";
 
 import * as Config from '../Config.js'; 
@@ -49,19 +49,30 @@ function LoginScreen()  {
             alert("Please enter password") ;
             return ;
         }
-        axios.post(Config.apiUrl + '/login', {name : name, passwd : password})
+
+        const data = new FormData();
+        data.append('name', name);
+        data.append('passwd', password);
+        
+        fetch(Config.apiUrl  + '/site/login', {
+          method: 'POST',
+          body: data,
+        })
+        // axios.post(Config.apiUrl + '/login', {name : name, passwd : password})
+        .then(response => response.json())
         .then(res => {
-            if (res.data.success) {
+            console.log(res) ;
+            if (res.success) {
                 // console.log('AAAAARRRGHHHH') ;
                 // console.log(res.data.data[0].id) ;
                 // save in local storage
-                setId(res.data.data[0].id) ;
+                setId(res.data[0].id) ;
                 
                 setMessage("") ; // this must be done BEFORE storeData() as storeDate will lead to a navigate which will unmount the component 
                 // storeData() ; // cannot change the state of an unmounted component
             } else {
-                setMessage(res.data.error) ;
-                alert(res.data.error) ;
+                setMessage(res.error) ;
+                alert(res.error) ;
             }
         })
     }

@@ -40,15 +40,27 @@ function MyEventsScreen () {
         if (context.user) {
             console.log('post axios') ;
             console.log(context.user) ;
-            let link = type === 'mine' ? '/events' : '/friend_events' ;
-            axios.post(Config.apiUrl + link, context.user)
+            let link = type === 'mine' ? '/site/events' : '/site/friend_events' ;
+            
+            const data = new FormData();
+            data.append('id', context.user.id);
+
+            fetch(Config.apiUrl  + link,  {
+                method: 'POST',
+                body: data,
+            })
+            // axios.post(Config.apiUrl + '/login', {name : name, passwd : password})
+            .then(response => response.json())
+            
+            // axios.post(Config.apiUrl + link, context.user)
             .then( (res) => {
-                if (res.data.success) {
+                console.log(res) ;
+                if (res.success) {
                    // console.log('listEvents') ;
                    // console.log(res.data.data) ;
-                    setEvents(res.data.data) ;
+                    setEvents(res.data) ;
                 } else {
-                    console.log(res.data.error) ;
+                    console.log(res.error) ;
                 }
             })
         }        
