@@ -4,7 +4,6 @@ import { Add, Delete} from '@mui/icons-material';
 import {Button, Container} from '@mui/material';
 
 
-import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
 
@@ -23,14 +22,22 @@ function EventScreen() {
     
     const listPictures = () => {
         console.log('listPictures invoked') ;
-        axios.post(Config.apiUrl + '/pictures', context.event)
+        
+        const data = new FormData();
+        data.append('id', context.event.id);
+
+        fetch(Config.apiUrl  + '/site/pictures',  {
+            method: 'POST',
+            body: data,
+        })
+        .then(response => response.json())
         .then( (res) => {
-            if (res.data.success) {
+            if (res.success) {
                 console.log('listPictures') ;
-                console.log(res.data.data) ;
-                setPictures(res.data.data) ;
+                console.log(res.data) ;
+                setPictures(res.data) ;
             } else {
-                console.log(res.data.error) ;
+                console.log(res.error) ;
             }
         })
     }        
@@ -47,8 +54,11 @@ function EventScreen() {
     
 
     const isOwner = () => {
+        console.log('isOwner') ;
         console.log(context.user) ;
-        return (context.user.id === context.event.id_user) ;
+        console.log(context.event) ;
+        
+        return (parseInt(context.user.id) === parseInt(context.event.id_user)) ;
     }
     
     const isEmpty = () => {
@@ -63,13 +73,21 @@ function EventScreen() {
     }  
         
     
-    const deleteEvent = () => {        
-         axios.post(Config.apiUrl + '/deleteEvent', context.event)
+    const deleteEvent = () => { 
+        const data = new FormData();
+        data.append('id', context.event.id);
+
+        fetch(Config.apiUrl  + '/site/delete-event',  {
+            method: 'POST',
+            body: data,
+        })
+        .then(response => response.json())
+         //axios.post(Config.apiUrl + '/deleteEvent', context.event)
         .then( (res) => {
-            if (res.data.success) {
+            if (res.success) {
                navigate('/my_events/' + context.type )
             } else {
-                console.log(res.data.error) ;
+                console.log(res.error) ;
             }
         })
     }

@@ -38,7 +38,6 @@ function MyEventsScreen () {
     const listEvents = () => {
         console.log('listEvent invoked') ;
         if (context.user) {
-            console.log('post axios') ;
             console.log(context.user) ;
             let link = type === 'mine' ? '/site/events' : '/site/friend_events' ;
             
@@ -56,8 +55,7 @@ function MyEventsScreen () {
             .then( (res) => {
                 console.log(res) ;
                 if (res.success) {
-                   // console.log('listEvents') ;
-                   // console.log(res.data.data) ;
+                    console.log(res.data) ;
                     setEvents(res.data) ;
                 } else {
                     console.log(res.error) ;

@@ -95,4 +95,90 @@ class SiteController extends Controller {
         
         exit (json_encode(['success' => true, 'data' => $rows])) ; 
     }
+    
+
+     // ajax
+	public function actionFriend_events() {
+        Yii::warning(json_encode($_POST)) ;
+        if (!isset($_POST['id'])) {
+            exit(json_encode(['success' => false , 'error' => 'missing user id'])) ;
+        }
+        
+        $sql = 
+        "select DISTINCT events.id, events.name, events.date, last_photo.url, shares.id_friend as id_friend " .
+        " from users, shares, events  left join (" .
+        "select * from photos " .
+        "where id in (" .
+        "    select max(id) from photos group by id_event " .
+        ")) as last_photo on events.id = last_photo.id_event " .
+        " where events.id_user = shares.id_friend and shares.id_user = :id " .
+        " order by events.id desc"; 
+        
+        $data = [] ;
+        $rows = Yii::$app->db->createCommand($sql)
+            ->bindValue(':id', $_POST['id'])
+            ->queryAll();
+
+        foreach ($rows as $row) {
+            $da = $row ;
+            $sql = "SELECT * FROM users WHERE id = :id " ;
+            $res = Yii::$app->db->createCommand($sql)
+                        ->bindValue(':id', $row['id_friend'])
+                        ->queryAll();
+            $da['friend'] = $res ;
+            $data[] = $da ;
+        }
+        
+        exit (json_encode(['success' => true, 'data' => $data])) ; 
+    }
+
+     // ajax
+	public function actionPictures() {
+        Yii::warning(json_encode($_POST)) ;
+        if (!isset($_POST['id'])) {
+            exit(json_encode(['success' => false , 'error' => 'missing event id'])) ;
+        }
+        
+        $sql = "SELECT * FROM photos WHERE id_event = :id ORDER BY date DESC " ;        
+        $rows = Yii::$app->db->createCommand($sql)
+            ->bindValue(':id', $_POST['id'])
+            ->queryAll();
+
+        exit (json_encode(['success' => true, 'data' => $rows])) ; 
+    }
+    
+    // ajax
+	public function actionDeleteEvent() {
+        Yii::warning(json_encode($_POST)) ;
+        if (!isset($_POST['id'])) {
+            exit(json_encode(['success' => false , 'error' => 'missing event id'])) ;
+        }
+        
+        try {       
+            $sql = "SELECT * FROM  photos WHERE id_event = :id" ;
+            $rows = Yii::$app->db->createCommand($sql)
+                    ->bindValue(':id', $_POST['id'])
+                    ->queryAll();
+            foreach($rows as $row) {
+                unlink(dirname ( __FILE__ ) . '/../web/images/' . $row['url']) ;
+                $sql ="DELETE FROM  photos WHERE id_event = :id" ;
+                Yii::$app->db->createCommand($sql)
+                    ->bindValue(':id', $_POST['id'])
+                    ->execute();
+                $sql ="DELETE FROM  events WHERE id = :id" ;
+                Yii::$app->db->createCommand($sql)
+                    ->bindValue(':id', $_POST['id'])
+                    ->execute();
+            }
+        } catch (Exception $e) {
+            exit (json_encode(['success' => false, 'data' => $e->getMessage()])) ; 
+        } 
+        
+        exit (json_encode(['success' => true, 'data' => $rows])) ; 
+    }
+
+
+    
+    
+    
 }
