@@ -14,7 +14,7 @@ function PictureScreen() {
     const [uploading, setUploading] = useState(false) ;
     const navigate = useNavigate();
         
-    const createFormData = (photo) => {
+    const createFormData = () => {
         const data = new FormData();
         data.append('photo', image);
         console.log('context.event') ;
@@ -30,20 +30,20 @@ function PictureScreen() {
     const uploadPicture = () => {
         setUploading(true) ;
  
-        fetch(Config.apiUrl  + '/upload', {
+        fetch(Config.apiUrl  + '/site/upload', {
           method: 'POST',
-          body: createFormData(image),
+          body: createFormData(),
         })
-          .then((response) => {
-           // console.log('response');
-           // console.log(response);
-           // Alert.alert(X.t("Success"), X.t("Image uploaded")) ;
-           setUploading(false) ;
-             navigate('/event') ;
-            //this.setState({ image : null}) ;
-           // var pictures = JSON.parse(JSON.stringify(this.context.state.pictures)) ;
-           // pictures.push(response.data) ;
-           // this.context.setPictures(pictures) ;
+        
+        .then(response => response.json())
+        // axios.post(Config.apiUrl + '/addEvent', { id_user: context.user.id, name: eventName})
+        .then(res => {
+            if (res.success) {
+                setUploading(false) ;
+                navigate('/event') ;
+            } else {
+                alert(res.error) ;
+            }    
            
           })
           .catch((error) => {

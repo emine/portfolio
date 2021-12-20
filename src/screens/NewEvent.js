@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect} from 'react';
 import {Button, Box, TextField, Container} from '@mui/material';
 
-import axios from 'axios';
+// import axios from 'axios';
 
 import * as Config from '../Config.js'; 
 import * as Helper from '../Helper.js'; 
@@ -18,13 +18,23 @@ function NewEvent(props) {
             alert("missing event") ;
             return ;
         } 
-        axios.post(Config.apiUrl + '/addEvent', { id_user: context.user.id, name: eventName})
+        
+        const data = new FormData();
+        data.append('id_user', context.user.id);
+        data.append('name', eventName);
+        
+        fetch(Config.apiUrl  + '/site/add-event', {
+          method: 'POST',
+          body: data,
+        })
+        .then(response => response.json())
+        // axios.post(Config.apiUrl + '/addEvent', { id_user: context.user.id, name: eventName})
         .then(res => {
-            if (res.data.success) {
+            if (res.success) {
                 props.addTrip(false) ;
             } else {
-                setMessage(res.data.error) ;
-                alert("Error " + res.data.error) ;
+                setMessage(res.error) ;
+                alert("Error " + res.error) ;
             }
         })
     }    

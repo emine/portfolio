@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 
 use app\models\Users;
+use app\models\Photos;
+
 
 class SiteController extends Controller {
     public $enableCsrfValidation = false;
@@ -176,9 +178,57 @@ class SiteController extends Controller {
         
         exit (json_encode(['success' => true, 'data' => $rows])) ; 
     }
+    
 
+    public function actionAddEvent() {
+        Yii::warning(json_encode($_POST)) ;
+        if (!isset($_POST['id_user']) || !isset($_POST['name']) ) {
+            exit(json_encode(['success' => false , 'error' => 'missing id_user or name'])) ;
+        }
+        $sql = "INSERT INTO events (id_user, name) VALUES (:id_user, :name) " ;
+        Yii::$app->db->createCommand($sql)
+                    ->bindValue(':id_user', $_POST['id_user']) 
+                    ->bindValue(':name', $_POST['name']) 
+                    ->execute();
+        exit (json_encode(['success' => true])) ; 
+    }
 
     
+    private function saveFile($file) {
+        if (isset($file) && is_uploaded_file($file['tmp_name'])) {
+            $filename = $file['name'] ;
+            $urlFilename = uniqid()  ;
+ 			move_uploaded_file($file['tmp_name'], dirname ( __FILE__ ) . '/../web/images/' . $urlFilename);     
+            return $urlFilename ;    
+        } else {
+            return "" ;
+        }
+    }
     
+    private function error_message($model) {
+        $errmsg = '' ;
+        $errors = $model->getErrors() ;
+        foreach ($errors as $attrib=>$msg) {
+                $errmsg .= implode($msg , ',') . "\n" ;
+        }
+        return $errmsg ;
+    }
+    
+    public function actionUpload() {
+        Yii::warning('ACTION UPLOAD') ;
+        Yii::warning(json_encode($_POST)) ;
+        Yii::warning(json_encode($_FILES)) ;
+        
+        $url = $this->saveFile($_FILES['photo']) ;
+        
+        $photo = new Photos ;
+        $photo->url = $url ;
+        $photo->id_event = $_POST['id'] ;
+        if ($photo->save()) {
+            exit(json_encode(['success' => true ])) ; 
+        } else {
+            exit(json_encode(['success' => false, 'error'=>$this->error_message($photo)])) ;
+        }
+    }  
     
 }
