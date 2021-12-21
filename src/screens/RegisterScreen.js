@@ -1,114 +1,133 @@
-import React, { Component} from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import React, { useState, useContext} from 'react';
+// import { StyleSheet, View, Text, Alert } from 'react-native';
 
-import { Input} from 'react-native-elements';
-import { Button } from 'react-native-elements';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+
+import uuid from 'react-uuid' ;
+import TopAppBar from './TopAppBar' ;
+
+
+//import { Input} from 'react-native-elements';
+//import { Button } from 'react-native-elements';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppContext from '../AppContext' ;
+import { useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
-import uuid from 'react-native-uuid';
+//import axios from 'axios';
+//import uuid from 'react-native-uuid';
 import * as Config from '../Config.js'; 
 
 import * as Helper from '../Helper.js'; 
-import * as Localization from 'expo-localization';
-import X from 'i18n-js';
-// Set the locale once at the beginning of your app.
-X.locale = Localization.locale;
-X.fallbacks = true;
-X.translations = Config.Lang ;
 
 
-export class RegisterScreen extends Component {
+function RegisterScreen()  {
+    const [name, setName] = useState("") ;
+    const [passwd, setPasswd] = useState("") ;
+    const [token, setToken] = useState("") ;
+    const [id, setId] = useState(0) ;
+    const [message, setMessage] = useState("") ;
     
-    static contextType = AppContext ; 
-    
-    constructor(props) {
-        super(props);
-        // initial value
-        this.state = {
-            name : "",
-            passwd: "",
-            token: uuid.v4(),
-            id: 0,
-            message: ""
-        }
-    }
- 
-    
-    storeData = async () => {
+    const context = useContext(AppContext) ;
+    const navigate = useNavigate();
+
+    const storeData = async () => {
         try {
-          const jsonValue = JSON.stringify(this.state)
-          await AsyncStorage.setItem('user', jsonValue)
-          // set context
-          this.context.setUser(this.state);
-          this.props.navigation.navigate('home') ;
+            const jsonValue = JSON.stringify({name: name, passwd: passwd, token:token, id: id, message:message}) ;
+            localStorage.setItem('user', jsonValue)
+            // set context
+            context.setUser({name: name, passwd: passwd, token:token, id: id});
+            navigate('/');
         } catch (e) {
-          // saving error
+            console.log(e.message) ;
         }
     }
  
     
-    register = () => {
+    const register = () => {
         console.log('register invoked' ) ;
-        console.log(this.state) ; 
-        if (this.state.name.trim().length == 0) {
-            Alert.alert(X.t("Error"), X.t("Please enter your name")) ;
+        if (name.trim().length == 0) {
+            alert("Please enter your name") ;
             return ;
         }
-        if (this.state.passwd.trim().length == 0) {
-            Alert.alert(X.t("Error"), X.t("Please enter password")) ;
+        if (passwd.trim().length == 0) {
+            alert("Please enter password") ;
             return ;
         }
-        axios.post(Config.apiUrl + '/register', this.state)
+        
+        const data = new FormData();
+        data.append('name', name);
+        data.append('passwd', passwd);
+        data.append('token', token);
+        
+        fetch(Config.apiUrl  + '/site/register', {
+          method: 'POST',
+          body: data,
+        })
+        // axios.post(Config.apiUrl + '/login', {name : name, passwd : password})
+        .then(response => response.json())
         .then(res => {
-            if (res.data.success) {
+            if (res.success) {
                 // console.log(res.data) ;
                 // save in local storage
-                this.setState({id: res.data.data.id}) ;
-                this.storeData() ;
+                setId(res.data.id) ;
+                storeData() ;
             } else {
-                this.setState( {message : res.data.error} ) ;
-                  Alert.alert(
-                    X.t("Error"),
-                    res.data.error
-                    ) ;
+                setMessage(res.error) ;
+                alert(res.error) ;
             }
         })
     }
     
     
     
-    render() {
-        return (
-            <View style={{
-                 flexDirection: "column",
-                 display: "flex",
-                 marginTop: 11,
-            }}>
-                <Input
-                    label={X.t("Name")}
-                    placeholder={X.t("your name or alias")}
-                    onChangeText={value => this.setState({ name: value })}
-                />
-                <Input
-                    label={X.t("Password")}
-                    placeholder="your password"
-                    onChangeText={value => this.setState({ passwd: value })}
-                />
-                <Button
-                    title={X.t("Register")}
-                    onPress={this.register}
-                    buttonStyle = {Config.buttonStyle}
-                    buttonTitleStyle = {Config.buttonTitleStyle}
-                />
-                <Text>
-                    {this.state.message}
-                </Text>    
-                
-            </View>
-        )
-    }
+    return (
+        <Container maxWidth="sm">
+        <TopAppBar 
+            title= "Register" 
+            returnLink="/"
+        />
+
+        <Box
+            component="form"
+            sx={{
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+        >
+         <div>
+            <TextField 
+                required
+                label="Name or alias" 
+                variant="standard" 
+                onChange={(ev) => setName(ev.target.value)} 
+                autoFocus
+            />
+        </div>
+        <div>
+            <TextField 
+                required
+                label="Choose a password" 
+                variant="standard" 
+                onChange={(ev) => setPasswd(ev.target.value)} 
+            />
+        </div>
+
+        <Button variant="outlined" onClick={ () => register()}>Register</Button>
+
+        <p className="text-danger">
+            {message}
+        </p>    
+
+    </Box>    
+    </Container>
+
+    )
 }
+
+export default RegisterScreen ;

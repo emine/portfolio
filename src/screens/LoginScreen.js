@@ -14,30 +14,18 @@ import { useNavigate } from 'react-router-dom';
 //import uuid from "uuid";
 
 import * as Config from '../Config.js'; 
+import TopAppBar from './TopAppBar' ;
 
 
 function LoginScreen()  {
     const [name, setName] = useState("") ;
     const [password, setPassword] = useState("") ;
-    const [id, setId] = useState(0) ;
     const [message, setMessage] = useState("") ;
     
     const context = useContext(AppContext) ;
     const navigate = useNavigate();
     
-    useEffect(() => {
-        if (id > 0) {
-            const jsonValue = JSON.stringify({name: name, password: password, id: id}) ;
-            localStorage.setItem('user', jsonValue) ;
-            // set context
-          
-            // EXPERIMENTAL fix context: 
-            context.setUser({name: name, password: password, id: id});
-            navigate('/');
-        }
-    });
- 
-  
+   
     
     const login = () => {
         // console.log('login invoked' ) ;
@@ -66,10 +54,16 @@ function LoginScreen()  {
                 // console.log('AAAAARRRGHHHH') ;
                 // console.log(res.data.data[0].id) ;
                 // save in local storage
-                setId(res.data[0].id) ;
+                const id = res.data[0].id ;
                 
                 setMessage("") ; // this must be done BEFORE storeData() as storeDate will lead to a navigate which will unmount the component 
-                // storeData() ; // cannot change the state of an unmounted component
+                if (id > 0) {
+                    const jsonValue = JSON.stringify({name: name, password: password, id: id}) ;
+                    localStorage.setItem('user', jsonValue) ;
+                    // set context
+                    context.setUser({name: name, password: password, id: id});
+                    navigate('/');
+                }
             } else {
                 setMessage(res.error) ;
                 alert(res.error) ;
@@ -81,6 +75,10 @@ function LoginScreen()  {
         
     return (
         <Container maxWidth="sm">
+        <TopAppBar 
+            title= "Login" 
+            returnLink="/"
+        />
         <Box
             component="form"
             sx={{

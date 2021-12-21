@@ -22,6 +22,8 @@ export default function FriendsScreen() {
             context.setUser(JSON.parse(jsonValue));
             listUsers() ;
         }
+    // the next line prevents the useEffect excessive warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) ;
         
     
@@ -41,8 +43,8 @@ export default function FriendsScreen() {
     
     const toggleFriend = (i, user_ref) => {
         setUsers(users.map(function(user) {
-            if (user.id == user_ref.id) {
-                user.isFriend = user.isFriend == 0 ? 1 : 0 ;
+            if (user.id === user_ref.id) {
+                user.isFriend = user.isFriend === 0 ? 1 : 0 ;
             }
             return user ;
         }));

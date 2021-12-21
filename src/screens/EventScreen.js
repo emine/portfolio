@@ -10,7 +10,7 @@ import AppContext from '../AppContext' ;
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
 
-import * as Helper from '../Helper.js'; 
+//import * as Helper from '../Helper.js'; 
 import TopAppBar from './TopAppBar' ;
 import { useNavigate } from 'react-router-dom';
 
@@ -44,12 +44,11 @@ function EventScreen() {
     
     useEffect(() => { 
         console.log('useeffect invoked') ;
-        const jsonValue = localStorage.getItem('user') ;    // USEFULL ??? TODO
-        context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
+       // const jsonValue = localStorage.getItem('user') ;    // USEFULL ??? TODO
+       // context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
         listPictures() ;
-        //this.props.navigation.setOptions({
-        //    headerTitle: this.context.event.name
-        //})
+    // the next line prevents the useEffect excessive warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps    
     },[]) 
     
 
@@ -92,13 +91,10 @@ function EventScreen() {
         })
     }
     
-    const addPicture = () => {
-        
-    }
  
     return (
         <Container>
-        <TopAppBar 
+            <TopAppBar 
             title={context.event.name} 
             returnLink={"/my_events/" + context.type}
             />
@@ -107,7 +103,8 @@ function EventScreen() {
             }
             {isOwner() && 
                 <Button sx={{color: 'error.main'}} variant="outlined" startIcon={<Delete />} onClick={ () => actionDeleteEvent()}>Delete this event</Button> 
-            }     
+            } 
+            {!isEmpty() &&
             <ImageGallery 
                 items={pictures.map( (item, i) => {
                     return {original: Config.apiUrl + '/images/' + item.url,
@@ -118,6 +115,7 @@ function EventScreen() {
                 thumbnailHeight = "50px"
                 thumbnailWidth = "50px"
             />
+            }
         </Container>
     );
 

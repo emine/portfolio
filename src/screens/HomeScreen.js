@@ -2,7 +2,7 @@ import React, { useContext, useEffect} from 'react';
 
 import { NavLink } from "react-router-dom" ;
 
-import axios from 'axios';
+//import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
 
@@ -31,19 +31,28 @@ function HomeScreen()  {
             console.log(user) ;
             context.setUser(user);
             //console.log(context) ;
-        }    
+        }
     },[]) ;
     
     
     const unregister = () => {
         try {
             // delete user on server
-             axios.post(Config.apiUrl + '/unregister', context.user)
+            
+            const data = new FormData();
+            data.append('id', context.user.id);
+
+            fetch(Config.apiUrl  + '/site/unregister', {
+              method: 'POST',
+              body: data,
+            })
+            // axios.post(Config.apiUrl + '/login', {name : name, passwd : password})
+            .then(response => response.json())
             .then( (res) => {
-                if (res.data.success) {
+                if (res.success) {
                     logout() ;
                 } else {
-                    console.log(res.data.error) ;
+                    console.log(res.error) ;
                 }
             })
         } catch(e) {
@@ -67,7 +76,7 @@ function HomeScreen()  {
     return (
         <Container maxWidth="sm">
         <TopAppBar 
-            title="Home"
+            title={"Home " + (context.user != null ? context.user.name : "")} 
             returnLink={false}
             />
         <Box
@@ -152,6 +161,7 @@ function HomeScreen()  {
             }
         </List>    
         </Box> 
+        
         </Container>
     );
 } 

@@ -1,4 +1,18 @@
 
+Decembre 21
+-----------
+
+1)  still not sure about sync between context and localStorage
+
+2) Not so sure about:
+   // the next line prevents the useEffect excessive warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps    
+    },[]) 
+
+Do some more testing ...
+
+
+
 temporaire
 ----------
           <Route path="/" element={<HomeScreen />} />

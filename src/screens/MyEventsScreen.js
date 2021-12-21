@@ -25,8 +25,8 @@ function MyEventsScreen () {
 
     useEffect(() => {
         console.log("MyEventsScreen useEffect invoked") ;
-        const jsonValue = localStorage.getItem('user') ;
-        context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
+    //    const jsonValue = localStorage.getItem('user') ;
+    //    context.setUser(jsonValue != null ? JSON.parse(jsonValue) : null);
         console.log(context.user) ;
         
       //  this._unsubscribe = this.props.navigation.addListener('focus', () => {

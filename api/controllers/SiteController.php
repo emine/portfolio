@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 
 use app\models\Users;
 use app\models\Photos;
+use app\models\Events;
 
 
 class SiteController extends Controller {
@@ -134,19 +135,25 @@ class SiteController extends Controller {
         exit (json_encode(['success' => true, 'data' => $data])) ; 
     }
 
+    private function getAttribs($modelArray) {
+        return array_map(
+            function($elem) {
+                return $elem->attributes ;
+            },
+            $modelArray
+        ) ;
+    }
+    
      // ajax
 	public function actionPictures() {
         Yii::warning(json_encode($_POST)) ;
         if (!isset($_POST['id'])) {
             exit(json_encode(['success' => false , 'error' => 'missing event id'])) ;
         }
-        
-        $sql = "SELECT * FROM photos WHERE id_event = :id ORDER BY date DESC " ;        
-        $rows = Yii::$app->db->createCommand($sql)
-            ->bindValue(':id', $_POST['id'])
-            ->queryAll();
-
-        exit (json_encode(['success' => true, 'data' => $rows])) ; 
+        $photos = Photos::find()->where(['id_event' => $_POST['id']])->all() ;
+        $res = json_encode(['success' => true, 'data' => $this->getAttribs($photos)]) ;
+        Yii::warning($res) ;
+        exit ($res) ; 
     }
     
     // ajax
@@ -155,28 +162,8 @@ class SiteController extends Controller {
         if (!isset($_POST['id'])) {
             exit(json_encode(['success' => false , 'error' => 'missing event id'])) ;
         }
-        
-        try {       
-            $sql = "SELECT * FROM  photos WHERE id_event = :id" ;
-            $rows = Yii::$app->db->createCommand($sql)
-                    ->bindValue(':id', $_POST['id'])
-                    ->queryAll();
-            foreach($rows as $row) {
-                unlink(dirname ( __FILE__ ) . '/../web/images/' . $row['url']) ;
-                $sql ="DELETE FROM  photos WHERE id_event = :id" ;
-                Yii::$app->db->createCommand($sql)
-                    ->bindValue(':id', $_POST['id'])
-                    ->execute();
-                $sql ="DELETE FROM  events WHERE id = :id" ;
-                Yii::$app->db->createCommand($sql)
-                    ->bindValue(':id', $_POST['id'])
-                    ->execute();
-            }
-        } catch (Exception $e) {
-            exit (json_encode(['success' => false, 'data' => $e->getMessage()])) ; 
-        } 
-        
-        exit (json_encode(['success' => true, 'data' => $rows])) ; 
+        $event = Events::findOne($_POST['id']) ;
+        exit(json_encode($event->deleteEvent())) ; 
     }
     
 
@@ -185,12 +172,15 @@ class SiteController extends Controller {
         if (!isset($_POST['id_user']) || !isset($_POST['name']) ) {
             exit(json_encode(['success' => false , 'error' => 'missing id_user or name'])) ;
         }
-        $sql = "INSERT INTO events (id_user, name) VALUES (:id_user, :name) " ;
-        Yii::$app->db->createCommand($sql)
-                    ->bindValue(':id_user', $_POST['id_user']) 
-                    ->bindValue(':name', $_POST['name']) 
-                    ->execute();
-        exit (json_encode(['success' => true])) ; 
+        $event = new Events ;
+        $event->id_user = $_POST['id_user'] ;
+        $event->name = $_POST['name'] ;
+        if ($event->save()) {
+            exit (json_encode(['success' => true])) ; 
+        } else {
+            Yii::warning('GOT HERE') ;
+            exit(json_encode(['success' => false, 'error'=>$this->error_message($event)])) ;
+        }
     }
 
     
@@ -230,5 +220,45 @@ class SiteController extends Controller {
             exit(json_encode(['success' => false, 'error'=>$this->error_message($photo)])) ;
         }
     }  
+    
+    public function actionRegister() {
+        Yii::warning('ACTION REGISTER') ;
+        Yii::warning(json_encode($_POST)) ;
+        if (isset($_POST['name']) && isset($_POST['passwd'])) {
+            $user = new Users ;
+            $user->name = $_POST['name'] ;
+            $user->passwd = $_POST['passwd'] ;
+            $user->token = $_POST['token'] ;
+            if ($user->save()) {
+                exit(json_encode(['success' => true, 'data' => $user->attributes])) ; 
+            } else {
+                exit(json_encode(['success' => false, 'error'=>$this->error_message($user)])) ;
+            }
+        } else {        
+            exit(json_encode(['success' => false, 'error'=>'missing name or passwd'])) ;
+        }
+    }      
+    
+    
+    public function actionUnregister() {
+        Yii::warning(json_encode($_POST)) ;
+        if (isset($_POST['id'])) {
+            $user = Users::findOne($_POST['id']) ;
+            // first delete all events 
+            foreach (Events::find()->where(['id_user' => $user->id]) as $event) {
+                $res = $event->deleteEvent() ;
+                if (!$res['success']) {
+                    exit(json_encode($res)) ;
+                }
+            }
+            if ($user->delete()) {
+                exit(json_encode(['success' => true])) ; 
+            } else {
+                exit(json_encode(['success' => false, 'error'=>$this->error_message($user)])) ;
+            }
+        } else {        
+            exit(json_encode(['success' => false, 'error'=>'missing id'])) ;
+        }
+    }      
     
 }

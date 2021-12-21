@@ -1,10 +1,9 @@
-import React, { useContext, useState, useEffect} from 'react';
+import React, { useContext, useState} from 'react';
 import {Button, Box, TextField, Container} from '@mui/material';
 
 // import axios from 'axios';
 
 import * as Config from '../Config.js'; 
-import * as Helper from '../Helper.js'; 
 import AppContext from '../AppContext' ;
 
 
@@ -14,7 +13,7 @@ function NewEvent(props) {
     const [eventName, setEventName] = useState('') ;
 
     const addEvent = () => {
-        if (eventName.trim() == '') {
+        if (eventName.trim() === '') {
             alert("missing event") ;
             return ;
         } 

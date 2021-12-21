@@ -7,6 +7,7 @@ import EventScreen from './screens/EventScreen.js' ;
 import PictureScreen from './screens/PictureScreen.js' ; 
 import FriendsScreen from './screens/FriendsScreen.js' ; 
 import HomeScreen from './screens/HomeScreen.js' ; 
+import RegisterScreen from './screens/RegisterScreen.js' ;    
 
 import ContextProvider from "./ContextProvider" ;
 
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/event" element={<EventScreen />} />
                 <Route path="/picture" element={<PictureScreen />} />
                 <Route path="/my_friends" element={<FriendsScreen />} />
+                <Route path="/register" element={<RegisterScreen />} />
             </Routes>
         </BrowserRouter>        
     </ContextProvider>     
