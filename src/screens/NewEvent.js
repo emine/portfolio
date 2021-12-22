@@ -69,6 +69,9 @@ function NewEvent(props) {
                 
                 <Button variant="outlined" onClick={ () => addEvent()}>Add</Button>
                 <Button variant="outlined" onClick={ () => cancelEvent()}>Cancel</Button>
+                <p className="text-danger">
+                    {message}
+                </p>        
             </Box>    
         </Container>
     );

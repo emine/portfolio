@@ -32,6 +32,8 @@ function HomeScreen()  {
             context.setUser(user);
             //console.log(context) ;
         }
+    // the next line prevents the useEffect excessive warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps        
     },[]) ;
     
     

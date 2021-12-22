@@ -22,22 +22,21 @@ import { useNavigate } from 'react-router-dom';
 //import uuid from 'react-native-uuid';
 import * as Config from '../Config.js'; 
 
-import * as Helper from '../Helper.js'; 
-
 
 function RegisterScreen()  {
     const [name, setName] = useState("") ;
     const [passwd, setPasswd] = useState("") ;
-    const [token, setToken] = useState("") ;
-    const [id, setId] = useState(0) ;
     const [message, setMessage] = useState("") ;
+    
+    var id = 0 ;
+    var token = "" ;
     
     const context = useContext(AppContext) ;
     const navigate = useNavigate();
 
     const storeData = async () => {
         try {
-            const jsonValue = JSON.stringify({name: name, passwd: passwd, token:token, id: id, message:message}) ;
+            const jsonValue = JSON.stringify({name: name, passwd: passwd, token:token, id: id}) ;
             localStorage.setItem('user', jsonValue)
             // set context
             context.setUser({name: name, passwd: passwd, token:token, id: id});
@@ -50,11 +49,11 @@ function RegisterScreen()  {
     
     const register = () => {
         console.log('register invoked' ) ;
-        if (name.trim().length == 0) {
+        if (name.trim().length === 0) {
             alert("Please enter your name") ;
             return ;
         }
-        if (passwd.trim().length == 0) {
+        if (passwd.trim().length === 0) {
             alert("Please enter password") ;
             return ;
         }
@@ -62,6 +61,7 @@ function RegisterScreen()  {
         const data = new FormData();
         data.append('name', name);
         data.append('passwd', passwd);
+        token = uuid() ;
         data.append('token', token);
         
         fetch(Config.apiUrl  + '/site/register', {
@@ -74,7 +74,7 @@ function RegisterScreen()  {
             if (res.success) {
                 // console.log(res.data) ;
                 // save in local storage
-                setId(res.data.id) ;
+                id = res.data.id ;
                 storeData() ;
             } else {
                 setMessage(res.error) ;

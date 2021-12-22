@@ -3,14 +3,21 @@ Decembre 21
 -----------
 
 1)  still not sure about sync between context and localStorage
+=> Do some more testing ...
+
 
 2) Not so sure about:
    // the next line prevents the useEffect excessive warning
     // eslint-disable-next-line react-hooks/exhaustive-deps    
     },[]) 
+=> DONE works 
 
-Do some more testing ...
 
+3) text-danger see why bootstrap does not work
+=> DONE bootstrap installed
+
+4) translate
+including api error messages
 
 
 temporaire

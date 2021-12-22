@@ -150,7 +150,7 @@ class SiteController extends Controller {
         if (!isset($_POST['id'])) {
             exit(json_encode(['success' => false , 'error' => 'missing event id'])) ;
         }
-        $photos = Photos::find()->where(['id_event' => $_POST['id']])->all() ;
+        $photos = Photos::find()->where(['id_event' => $_POST['id']])->orderBy(['id' => SORT_DESC])->all() ;
         $res = json_encode(['success' => true, 'data' => $this->getAttribs($photos)]) ;
         Yii::warning($res) ;
         exit ($res) ; 

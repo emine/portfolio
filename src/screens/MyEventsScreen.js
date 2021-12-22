@@ -5,7 +5,7 @@ import {Button, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton
 import { Add, ChevronRight} from '@mui/icons-material';
 import TopAppBar from './TopAppBar' ;
 
-import axios from 'axios';
+//import axios from 'axios';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -33,6 +33,8 @@ function MyEventsScreen () {
       //          this.listEvents() ;
       //      });
         listEvents() ;
+    // the next line prevents the useEffect excessive warning
+    // eslint-disable-next-line react-hooks/exhaustive-deps            
     }, [])
     
     const listEvents = () => {

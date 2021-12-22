@@ -1,12 +1,13 @@
-import React, { useState, useContext, useEffect} from 'react';
+import React, { useState, useContext} from 'react';
 import {Input, Box, Container, Button} from '@mui/material';
-
 
 // import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
 import { useNavigate } from 'react-router-dom';
 import TopAppBar from './TopAppBar' ;
+
+import Loader from "react-loader-spinner";
 
 function PictureScreen() {
     const context = useContext(AppContext)
@@ -76,7 +77,12 @@ function PictureScreen() {
 
             
             <Button variant="outlined" onClick={ () => uploadPicture()}>Upload</Button>
+            
+             {uploading && 
+                <Loader type="Circles" color="#00BFFF" height={80} width={80}/>    
+            }
 
+            
             
         </Box>    
         </Container>
