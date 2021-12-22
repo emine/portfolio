@@ -22,7 +22,7 @@ import ContextProvider from "./ContextProvider" ;
 function App() {
   return (
     <ContextProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/portfolio">
             <Routes>
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/login" element={<LoginScreen />} />
