@@ -14,9 +14,12 @@ import * as Helper from '../Helper.js';
 
 import AppContext from '../AppContext' ;
 
+import { useTranslation } from "react-i18next";
+
 
 
 function MyEventsScreen () {
+    const { t } = useTranslation();
     const context = useContext(AppContext) ;
     const [events, setEvents] = useState([]) ;
     const [addTrip, setAddTrip] = useState(false) ;
@@ -96,7 +99,7 @@ function MyEventsScreen () {
         
         <Container maxWidth="sm">
             <TopAppBar 
-                title= {type === 'mine' ? "My Events" : "Friend Events"} 
+                title= {type === 'mine' ? t("My Events") : t("Friend Events")} 
                 returnLink="/"
                 />
             { type === 'mine' && context.user != null  && !addTrip &&
@@ -104,7 +107,7 @@ function MyEventsScreen () {
                     startIcon={<Add />}
                     onClick={openInput}
                     variant="outlined"
-                    >Add Event
+                    >{t('Add Event')}
                 </Button>    
             }
 

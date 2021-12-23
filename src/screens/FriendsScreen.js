@@ -4,7 +4,7 @@ import {List, ListItem, ListItemButton, ListItemText, Checkbox, Container}  from
 
 import TopAppBar from './TopAppBar' ;
 
-import axios from 'axios';
+// import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
 import { useNavigate } from 'react-router-dom';
@@ -28,13 +28,21 @@ export default function FriendsScreen() {
         
     
     
-     const listUsers = () => {            
-        axios.post(Config.apiUrl + '/friends', context.user)
+     const listUsers = () => {
+         
+        const data = new FormData();
+        data.append('id', context.user.id);
+
+        fetch(Config.apiUrl  + '/site/friends',  {
+            method: 'POST',
+            body: data
+        })
+        .then(response => response.json())
         .then( (res) => {
-            if (res.data.success) {
-                setUsers(res.data.data) ;
+            if (res.success) {
+                setUsers(res.data) ;
             } else {
-                console.log(res.data.error) ;
+                console.log(res.error) ;
             }
         })
     }
@@ -48,13 +56,22 @@ export default function FriendsScreen() {
             }
             return user ;
         }));
+        const data = new FormData();
+        data.append('id_friend',  user_ref.id) ;
+        data.append('id_user', context.user.id) ;
+        data.append('isFriend', users[i].isFriend) ;
+        
+        fetch(Config.apiUrl  + '/site/update-friend',  {
+            method: 'POST',
+            body: data 
+        })
         // update on server
-        axios.post(Config.apiUrl + '/updateFriend', users[i])
+//        axios.post(Config.apiUrl + '/updateFriend', users[i])
         .then( (res) => {
-            if (res.data.success) {
+            if (res.success) {
                 console.log('Friends updated') ;
             } else {
-                console.log(res.data.error) ;
+                console.log(res.error) ;
             }
         })
     }

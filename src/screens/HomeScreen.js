@@ -18,8 +18,11 @@ import TopAppBar from './TopAppBar' ;
 
 import { ArrowCircleUp, Login, Image, PermMedia, Group, Logout, Delete } from '@mui/icons-material';
 
+import { useTranslation } from "react-i18next";
 
 function HomeScreen()  {
+    const { t } = useTranslation();
+
     const context = useContext(AppContext) ;
     
      useEffect(() => {
@@ -78,7 +81,7 @@ function HomeScreen()  {
     return (
         <Container maxWidth="sm">
         <TopAppBar 
-            title={"Home " + (context.user != null ? context.user.name : "")} 
+            title={t("Home") + ' ' + (context.user != null ? context.user.name : "")} 
             returnLink={false}
             />
         <Box
@@ -97,7 +100,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <ArrowCircleUp/>
                         </ListItemIcon>
-                        <ListItemText primary="Register" />
+                        <ListItemText primary={t("Register")} />
                     </ListItemButton>
                 </ListItem>
             }        
@@ -107,7 +110,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}} >
                             <Login/>
                         </ListItemIcon>
-                        <ListItemText primary="Login" />
+                        <ListItemText primary={t("Login")} />
                     </ListItemButton>
                 </ListItem>
             }
@@ -117,7 +120,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <Image/>
                         </ListItemIcon>
-                        <ListItemText  primary="My Events" />
+                        <ListItemText  primary={t("My Events")} />
                     </ListItemButton>
                 </ListItem>
             }
@@ -127,7 +130,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <PermMedia/>
                         </ListItemIcon>
-                        <ListItemText primary="Friend Events" />
+                        <ListItemText primary={t("Friend Events")} />
                     </ListItemButton>
                 </ListItem>
             }
@@ -137,7 +140,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <Group/>
                         </ListItemIcon>
-                        <ListItemText primary="My Friends" />
+                        <ListItemText primary={t("My Friends")} />
                     </ListItemButton>
                 </ListItem>
             }
@@ -147,7 +150,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <Logout/>
                         </ListItemIcon>
-                        <ListItemText primary="Log Out" />
+                        <ListItemText primary={t("Log Out")} />
                     </ListItemButton>
                 </ListItem>
             }
@@ -157,7 +160,7 @@ function HomeScreen()  {
                         <ListItemIcon sx={{color: 'error.main'}}>
                             <Delete/>
                         </ListItemIcon>
-                        <ListItemText primary="Delete Account" />
+                        <ListItemText primary={t("Delete Account")} />
                     </ListItemButton>
                 </ListItem>
             }

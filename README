@@ -8,7 +8,7 @@ DEPLOYMENT: VERY IMPORTANT
 2) in package.json
    "homepage": "./",
 
-So better to install at domain root : use subdomain on vps
+
 
 
 Decembre 21
@@ -30,6 +30,13 @@ Decembre 21
 
 4) translate
 including api error messages
+
+usefull links
+https://blogs.infinitesquare.com/posts/web/ajouter-des-traductions-dans-votre-app-react-avec-i18n
+https://react.i18next.com/getting-started
+
+
+
 
 
 temporaire

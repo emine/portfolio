@@ -11,6 +11,8 @@ use yii\filters\VerbFilter;
 use app\models\Users;
 use app\models\Photos;
 use app\models\Events;
+use app\models\Shares;
+
 
 
 class SiteController extends Controller {
@@ -260,5 +262,49 @@ class SiteController extends Controller {
             exit(json_encode(['success' => false, 'error'=>'missing id'])) ;
         }
     }      
+    
+    public function actionFriends() {
+        Yii::warning(json_encode($_POST)) ;
+        if (isset($_POST['id'])) {
+            $user = Users::findOne($_POST['id']) ;
+            $data = [] ;
+            foreach (Users::find()->where(['<>', 'id', $_POST['id']])->orderBy('name')->all() as $friend) {
+                $rec = $friend->attributes ; 
+                $rec['isFriend'] = $user->isFriend($friend->id) ? 1 : 0 ;
+                $data[] = $rec ;
+            }
+            exit(json_encode(['success' => true, 'data' => $data])) ; 
+        } else {        
+            exit(json_encode(['success' => false, 'error'=>'missing id'])) ;
+        }
+    }
+    
+    public function actionUpdateFriend() {
+        Yii::warning('UPDATE FRIEND') ;
+        Yii::warning(json_encode($_POST)) ;
+        if (!isset($_POST['id_user']) || !isset($_POST['id_friend']) || !isset($_POST['isFriend'])) {
+            exit(json_encode(['success' => false, 'error'=>'missing parameters'])) ;
+        }
+        
+        if ($_POST['isFriend'] == '0' ) {
+            $share = Shares::find()->where(['id_user' => $_POST['id_user']])->andWhere(['id_friend' => $_POST['id_friend']])->one() ;
+            Yii::warning('CHECK 1') ;
+            if ($share) {
+                if (!$share->delete()) {
+                    exit(json_encode(['success' => false, 'error'=>$this->error_message($share)])) ;
+                }
+            }
+        } else {
+            Yii::warning('CHECK 2') ;
+            $share = new Shares ;
+            $share->id_user = $_POST['id_user'] ;
+            $share->id_friend = $_POST['id_friend'] ;
+            if (!$share->save()) {
+                 exit(json_encode(['success' => false, 'error'=>$this->error_message($share)])) ;
+            }
+        }
+        exit(json_encode(['success' => true, 'data' => $data])) ; 
+    }
+    
     
 }

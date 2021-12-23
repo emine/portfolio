@@ -48,4 +48,13 @@ class Users extends \yii\db\ActiveRecord
             'token' => 'Token',
         ];
     }
+    
+    public function isFriend($id_friend) {
+        if (Shares::find()->where(['id_user' => $this->id])->andWhere(['id_friend' => $id_friend])->one()) {
+            return true ;
+        } else {
+            return false ;
+        }
+    }
+    
 }
