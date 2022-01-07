@@ -116,7 +116,7 @@ class SiteController extends Controller {
         "where id in (" .
         "    select max(id) from photos group by id_event " .
         ")) as last_photo on events.id = last_photo.id_event " .
-        " where events.id_user = shares.id_friend and shares.id_user = :id " .
+        " where events.id_user = shares.id_user and shares.id_friend = :id " .
         " order by events.id desc"; 
         
         $data = [] ;
@@ -270,7 +270,7 @@ class SiteController extends Controller {
             $data = [] ;
             foreach (Users::find()->where(['<>', 'id', $_POST['id']])->orderBy('name')->all() as $friend) {
                 $rec = $friend->attributes ; 
-                $rec['isFriend'] = $user->isFriend($friend->id) ? 1 : 0 ;
+                $rec['isFriend'] = $user->hasAllowed($friend->id) ? 1 : 0 ;
                 $data[] = $rec ;
             }
             exit(json_encode(['success' => true, 'data' => $data])) ; 
