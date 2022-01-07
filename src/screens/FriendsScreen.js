@@ -7,12 +7,16 @@ import TopAppBar from './TopAppBar' ;
 // import axios from 'axios';
 import * as Config from '../Config.js'; 
 import AppContext from '../AppContext' ;
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { useTranslation } from "react-i18next";
 
 export default function FriendsScreen() {
+    const { t } = useTranslation();
     const context = useContext(AppContext) ;
     const [users, setUsers] = useState([]) ;
     const navigate = useNavigate();
+    const {action} = useParams() ;   // 'allow' 'block'
     
     useEffect(() => {
         const jsonValue = localStorage.getItem('user') ;
@@ -32,6 +36,7 @@ export default function FriendsScreen() {
          
         const data = new FormData();
         data.append('id', context.user.id);
+        data.append('action', action) ;
 
         fetch(Config.apiUrl  + '/site/friends',  {
             method: 'POST',
@@ -60,6 +65,7 @@ export default function FriendsScreen() {
         data.append('id_friend',  user_ref.id) ;
         data.append('id_user', context.user.id) ;
         data.append('isFriend', users[i].isFriend) ;
+        data.append('action', action) ;
         
         fetch(Config.apiUrl  + '/site/update-friend',  {
             method: 'POST',
@@ -79,11 +85,13 @@ export default function FriendsScreen() {
     return(
         <Container maxWidth="sm">
             <TopAppBar 
-                title= "Users" 
+                title= {action === 'allow' ? t("Allowed Users") : t("Blocked Users") } 
                 returnLink="/"
             />
 
-            <h4>Select users allowed to see your pictures</h4>
+            <h4>{action === 'allow' ? t('Select users allowed to see your pictures') : 
+                                      t('Select users you do not want to see pictures')} 
+            </h4>
                 
              <List>
                 {users.map( (user, i) =>  

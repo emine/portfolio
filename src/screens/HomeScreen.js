@@ -135,12 +135,22 @@ function HomeScreen()  {
                 </ListItem>
             }
             { context.user != null  &&
-                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_friends">
+                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_friends/allow">
                     <ListItemButton>
                         <ListItemIcon sx={{color: 'primary.main'}}>
                             <Group/>
                         </ListItemIcon>
                         <ListItemText primary={t("My Friends")} />
+                    </ListItemButton>
+                </ListItem>
+            }
+            { context.user != null  &&
+                <ListItem sx={{color: 'primary.main'}} component={NavLink} to="/my_friends/block">
+                    <ListItemButton>
+                        <ListItemIcon sx={{color: 'primary.main'}}>
+                            <Group/>
+                        </ListItemIcon>
+                        <ListItemText primary={t("Blocked Users")} />
                     </ListItemButton>
                 </ListItem>
             }

@@ -13,8 +13,10 @@ import "react-image-gallery/styles/css/image-gallery.css";
 //import * as Helper from '../Helper.js'; 
 import TopAppBar from './TopAppBar' ;
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 
 function EventScreen() {
+    const {t} = useTranslation() ;
     const context = useContext(AppContext) ;
     const [pictures, setPictures] = useState([]) ;  
     const navigate = useNavigate();
@@ -99,10 +101,14 @@ function EventScreen() {
             returnLink={"/my_events/" + context.type}
             />
             {isOwner() &&
-                <Button variant="outlined" startIcon={<Add />} onClick={ () => navigate('/picture')}>Add Picture</Button>
+                <Button variant="outlined" startIcon={<Add />} onClick={ () => navigate('/picture')}>{t("Add Picture")}</Button>
             }
             {isOwner() && 
-                <Button sx={{color: 'error.main'}} variant="outlined" startIcon={<Delete />} onClick={ () => actionDeleteEvent()}>Delete this event</Button> 
+                <Button 
+                    sx={{color: 'error.main'}} 
+                    variant="outlined" 
+                    startIcon={<Delete />} 
+                    onClick={ () => actionDeleteEvent()}>{t("Delete this event")}</Button> 
             } 
             {!isEmpty() &&
             <ImageGallery 

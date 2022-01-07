@@ -58,8 +58,8 @@ class Users extends \yii\db\ActiveRecord
         }
     }
     
-    public function isAllowedBy($id_friend) {
-        if (Shares::find()->where(['id_user' => $id_friend])->andWhere(['id_friend' => $this->id])->one()) {
+    public function hasBlocked($id_friend) {
+        if (Blocks::find()->where(['id_user' => $this->id])->andWhere(['id_friend' => $id_friend])->one()) {
             return true ;
         } else {
             return false ;

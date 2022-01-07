@@ -12,7 +12,7 @@ import RegisterScreen from './screens/RegisterScreen.js' ;
 import ContextProvider from "./ContextProvider" ;
 
 import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
+import {initReactI18next } from "react-i18next";
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 import translationEN from './i18n/en.json';
@@ -46,14 +46,14 @@ function App() {
 
     return (
         <ContextProvider>
-            <BrowserRouter basename="/portfolio">
+            <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<HomeScreen />} />
                     <Route path="/login" element={<LoginScreen />} />
                     <Route path="/my_events/:type" element={<MyEventsScreen />} />
                     <Route path="/event" element={<EventScreen />} />
                     <Route path="/picture" element={<PictureScreen />} />
-                    <Route path="/my_friends" element={<FriendsScreen />} />
+                    <Route path="/my_friends/:action" element={<FriendsScreen />} />
                     <Route path="/register" element={<RegisterScreen />} />
                 </Routes>
             </BrowserRouter>        

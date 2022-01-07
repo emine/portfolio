@@ -16,6 +16,7 @@ import AppContext from '../AppContext' ;
 
 import { useTranslation } from "react-i18next";
 
+// param type indicates my events (type = 'mine') or friend events (type= 'friend')
 
 
 function MyEventsScreen () {

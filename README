@@ -111,3 +111,12 @@ Project
 build "portfolio" as a PWA react web app with the same functionalities as react native "demo" project (except taking picture)
 and merge the features from "interv" app (Routes, bootstrap). Use only function components.  
 
+
+CREATE TABLE `blocks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_user` int(11) NOT NULL DEFAULT 0,
+  `id_friend` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `id_user` (`id_user`),
+  KEY `id_friend` (`id_friend`)
+) ENGINE=MyISAM ;

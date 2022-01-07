@@ -110,7 +110,7 @@ class SiteController extends Controller {
         }
         
         $sql = 
-        "select DISTINCT events.id, events.name, events.date, last_photo.url, shares.id_friend as id_friend " .
+        "select DISTINCT events.id, events.name, events.date, last_photo.url, shares.id_user as id_friend " .
         " from users, shares, events  left join (" .
         "select * from photos " .
         "where id in (" .
@@ -131,7 +131,10 @@ class SiteController extends Controller {
                         ->bindValue(':id', $row['id_friend'])
                         ->queryAll();
             $da['friend'] = $res ;
-            $data[] = $da ;
+            $user = Users::findOne($_POST['id']) ;
+            if (!$user->hasBlocked($row['id_friend'])) {
+                $data[] = $da ;
+            }
         }
         
         exit (json_encode(['success' => true, 'data' => $data])) ; 
@@ -263,31 +266,48 @@ class SiteController extends Controller {
         }
     }      
     
+    
+    /*
+     *  $_POST['action'] == 'allow' or 'block'
+     */
+    
     public function actionFriends() {
         Yii::warning(json_encode($_POST)) ;
-        if (isset($_POST['id'])) {
+        if (isset($_POST['id']) && isset($_POST['action'])) {
             $user = Users::findOne($_POST['id']) ;
             $data = [] ;
             foreach (Users::find()->where(['<>', 'id', $_POST['id']])->orderBy('name')->all() as $friend) {
-                $rec = $friend->attributes ; 
-                $rec['isFriend'] = $user->hasAllowed($friend->id) ? 1 : 0 ;
+                $rec = $friend->attributes ;
+                if ($_POST['action'] == 'allow') { 
+                    $rec['isFriend'] = $user->hasAllowed($friend->id) ? 1 : 0 ;
+                } else {
+                    $rec['isFriend'] = $user->hasBlocked($friend->id) ? 1 : 0 ;
+                }    
                 $data[] = $rec ;
             }
             exit(json_encode(['success' => true, 'data' => $data])) ; 
         } else {        
-            exit(json_encode(['success' => false, 'error'=>'missing id'])) ;
+            exit(json_encode(['success' => false, 'error'=>'missing id or action'])) ;
         }
     }
     
+    /*
+     *  $_POST['action'] == 'allow' or 'block'
+     */
     public function actionUpdateFriend() {
         Yii::warning('UPDATE FRIEND') ;
         Yii::warning(json_encode($_POST)) ;
-        if (!isset($_POST['id_user']) || !isset($_POST['id_friend']) || !isset($_POST['isFriend'])) {
+        if (!isset($_POST['id_user']) || !isset($_POST['id_friend']) || !isset($_POST['isFriend']) ||  !isset($_POST['action'])) {
             exit(json_encode(['success' => false, 'error'=>'missing parameters'])) ;
         }
         
+        if ($_POST['action'] == 'allow') {
+            $model = "app\\models\\Shares" ; 
+        } else {
+            $model = "app\\models\\Blocks" ; 
+        }
         if ($_POST['isFriend'] == '0' ) {
-            $share = Shares::find()->where(['id_user' => $_POST['id_user']])->andWhere(['id_friend' => $_POST['id_friend']])->one() ;
+            $share = $model::find()->where(['id_user' => $_POST['id_user']])->andWhere(['id_friend' => $_POST['id_friend']])->one() ;
             Yii::warning('CHECK 1') ;
             if ($share) {
                 if (!$share->delete()) {
@@ -296,7 +316,7 @@ class SiteController extends Controller {
             }
         } else {
             Yii::warning('CHECK 2') ;
-            $share = new Shares ;
+            $share = new $model ;
             $share->id_user = $_POST['id_user'] ;
             $share->id_friend = $_POST['id_friend'] ;
             if (!$share->save()) {

@@ -8,8 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import TopAppBar from './TopAppBar' ;
 
 import Loader from "react-loader-spinner";
+import { useTranslation } from "react-i18next";
 
 function PictureScreen() {
+    const {t} = useTranslation() ;
     const context = useContext(AppContext)
     const [image, setImage] = useState(null) ;
     const [uploading, setUploading] = useState(false) ;
@@ -57,7 +59,7 @@ function PictureScreen() {
    return (
         <Container maxWidth="sm">
         <TopAppBar 
-            title="Choose Picture"
+            title={t("Choose Picture")}
             returnLink="/event"
             />
         <Box
@@ -76,7 +78,7 @@ function PictureScreen() {
             </div>
 
             
-            <Button variant="outlined" onClick={ () => uploadPicture()}>Upload</Button>
+            <Button variant="outlined" onClick={ () => uploadPicture()}>{t("Upload")}</Button>
             
              {uploading && 
                 <Loader type="Circles" color="#00BFFF" height={80} width={80}/>    
