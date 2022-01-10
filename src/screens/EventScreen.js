@@ -126,8 +126,8 @@ function EventScreen() {
             {!isEmpty() &&
             <ImageGallery 
                 items={pictures.map( (item, i) => {
-                    return {original: Config.apiUrl + '/images/' + item.url,
-                            thumbnail: Config.apiUrl + '/images/' + item.url
+                    return {original: Config.imageDir + item.url,
+                            thumbnail: Config.imageDir +  item.url
 
                         } ;
                 })}

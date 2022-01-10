@@ -134,7 +134,7 @@ function MyEventsScreen () {
                         }
                         >
                         <ListItemAvatar>
-                            <Avatar src={Config.apiUrl + '/images/' + item.url} />
+                            <Avatar src={Config.imageDir + item.url} />
                         </ListItemAvatar>
                         <ListItemText
                             primary={ type==='mine' ? item.name : item.friend[0].name + ': ' + item.name}
