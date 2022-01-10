@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect} from 'react';
 
 import { Add, Delete} from '@mui/icons-material';
-import {Button, Container} from '@mui/material';
+import {Button, Container, Box} from '@mui/material';
 
 
 import * as Config from '../Config.js'; 
@@ -95,20 +95,33 @@ function EventScreen() {
     
  
     return (
-        <Container>
+        <Container maxWidth="sm" >
             <TopAppBar 
             title={context.event.name} 
             returnLink={"/my_events/" + context.type}
             />
             {isOwner() &&
-                <Button variant="outlined" startIcon={<Add />} onClick={ () => navigate('/picture')}>{t("Add Picture")}</Button>
-            }
-            {isOwner() && 
+            <Box
+                display="flex"
+                justifyContent="space-around"
+                alignItems= "center"
+                marginTop="5%"
+                marginBottom="5%"
+            >    
+                <Button 
+                    variant="outlined" 
+                    startIcon={<Add />} 
+                    onClick={ () => navigate('/picture')}>
+                    {t("Add Picture")}
+                </Button>
                 <Button 
                     sx={{color: 'error.main'}} 
                     variant="outlined" 
                     startIcon={<Delete />} 
-                    onClick={ () => actionDeleteEvent()}>{t("Delete this event")}</Button> 
+                    onClick={ () => actionDeleteEvent()}>
+                    {t("Delete this event")}
+                </Button>
+            </Box>    
             } 
             {!isEmpty() &&
             <ImageGallery 

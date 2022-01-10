@@ -1,6 +1,6 @@
 import React, { useContext, useState} from 'react';
 import {Button, Box, TextField, Container} from '@mui/material';
-
+import { useTranslation } from "react-i18next";
 // import axios from 'axios';
 
 import * as Config from '../Config.js'; 
@@ -8,6 +8,7 @@ import AppContext from '../AppContext' ;
 
 
 function NewEvent(props) {
+    const { t } = useTranslation();
     const context = useContext(AppContext) ;
     const [message, setMessage] = useState('') ;
     const [eventName, setEventName] = useState('') ;
@@ -47,11 +48,11 @@ function NewEvent(props) {
 
     return (
         <Container maxWidth="sm">
-        <h3>Event</h3>
+            <h2 style={{"text-align": "center"}}>{t("Create Event")}</h2> 
             <Box
                 component="form"
                 sx={{
-                  '& .MuiTextField-root': { m: 1, width: '25ch' },
+                  '& .MuiTextField-root': { m: 1, width: '100%' },
                 }}
                 noValidate
                 autoComplete="off"
@@ -59,16 +60,21 @@ function NewEvent(props) {
                 <div>
                     <TextField 
                         required
-                        label="New Event" 
+                        label={t("New Event")} 
                         variant="standard" 
                         onChange={(ev) => setEventName(ev.target.value)} 
                         autoFocus
                     />
                 </div>
 
-                
-                <Button variant="outlined" onClick={ () => addEvent()}>Add</Button>
-                <Button variant="outlined" onClick={ () => cancelEvent()}>Cancel</Button>
+                <Box
+                    display="flex"
+                    justifyContent="space-around"
+                    alignItems= "center"
+                >    
+                    <Button variant="outlined" onClick={ () => addEvent()}>{t('Add')}</Button>
+                    <Button variant="outlined" onClick={ () => cancelEvent()}>{ t('Cancel')}</Button>
+                </Box>
                 <p className="text-danger">
                     {message}
                 </p>        

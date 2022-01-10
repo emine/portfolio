@@ -5,6 +5,9 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
+import { useTranslation } from "react-i18next";
+
 
 import uuid from 'react-uuid' ;
 import TopAppBar from './TopAppBar' ;
@@ -24,6 +27,7 @@ import * as Config from '../Config.js';
 
 
 function RegisterScreen()  {
+    const {t} = useTranslation() ;
     const [name, setName] = useState("") ;
     const [passwd, setPasswd] = useState("") ;
     const [message, setMessage] = useState("") ;
@@ -50,11 +54,11 @@ function RegisterScreen()  {
     const register = () => {
         console.log('register invoked' ) ;
         if (name.trim().length === 0) {
-            alert("Please enter your name") ;
+            setMessage(t("Please enter your name")) ;
             return ;
         }
         if (passwd.trim().length === 0) {
-            alert("Please enter password") ;
+            setMessage(t("Please enter password")) ;
             return ;
         }
         
@@ -77,8 +81,11 @@ function RegisterScreen()  {
                 id = res.data.id ;
                 storeData() ;
             } else {
-                setMessage(res.error) ;
-                alert(res.error) ;
+                // use regexp to translate : Name "XXDX" has already been taken 
+                let err = res.error ;
+                err = err.replace("Name", t('Name')) ;
+                err = err.replace("has already been taken", t('has already been taken')) ;
+                setMessage(err) ;
             }
         })
     }
@@ -88,7 +95,7 @@ function RegisterScreen()  {
     return (
         <Container maxWidth="sm">
         <TopAppBar 
-            title= "Register" 
+            title= {t("Register")} 
             returnLink="/"
         />
 
@@ -96,6 +103,7 @@ function RegisterScreen()  {
             component="form"
             sx={{
               '& .MuiTextField-root': { m: 1, width: '25ch' },
+              'marginTop' : '10%'
             }}
             noValidate
             autoComplete="off"
@@ -103,7 +111,7 @@ function RegisterScreen()  {
          <div>
             <TextField 
                 required
-                label="Name or alias" 
+                label={t("Name or alias")} 
                 variant="standard" 
                 onChange={(ev) => setName(ev.target.value)} 
                 autoFocus
@@ -112,18 +120,23 @@ function RegisterScreen()  {
         <div>
             <TextField 
                 required
-                label="Choose a password" 
+                label={t("Choose a password")} 
                 variant="standard" 
                 onChange={(ev) => setPasswd(ev.target.value)} 
             />
         </div>
-
-        <Button variant="outlined" onClick={ () => register()}>Register</Button>
-
-        <p className="text-danger">
-            {message}
-        </p>    
-
+        <Box
+            display="flex"
+            justifyContent="space-around"
+            alignItems= "center"
+            marginTop="5%"
+            marginBottom="5%"
+            >    
+            <Button variant="outlined" onClick={ () => register()}>{t('Register')}</Button>
+        </Box>
+        {message && 
+            <Alert severity="error">{message}</Alert>
+        }  
     </Box>    
     </Container>
 

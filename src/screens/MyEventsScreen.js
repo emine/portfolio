@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect} from 'react';
 import NewEvent from './NewEvent.js' ; 
 
-import {Button, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Container} from '@mui/material';
+import {Button, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Container, Box} from '@mui/material';
 import { Add, ChevronRight} from '@mui/icons-material';
 import TopAppBar from './TopAppBar' ;
 
@@ -98,19 +98,24 @@ function MyEventsScreen () {
 
     return (
         
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" style={{justifyContent: 'center'}}>
             <TopAppBar 
                 title= {type === 'mine' ? t("My Events") : t("Friend Events")} 
                 returnLink="/"
                 />
             { type === 'mine' && context.user != null  && !addTrip &&
-                <Button 
-                    startIcon={<Add />}
-                    onClick={openInput}
-                    variant="outlined"
-                    >{t('Add Event')}
-                </Button>    
-            }
+                <Box
+                    textAlign = "center"
+                    marginTop = "5%"
+                >
+                    <Button 
+                        startIcon={<Add />}
+                        onClick={openInput}
+                        variant="outlined"
+                        >{t('Add Event')}
+                    </Button>
+                </Box>    
+                }
 
             { type === 'mine' && context.user != null  && addTrip &&
                   <NewEvent addTrip = {actionAddTrip} /> 

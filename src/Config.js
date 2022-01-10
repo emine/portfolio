@@ -1,4 +1,4 @@
 // export const apiUrl = `http://51.254.206.78:3002` ;
-export const apiUrl = `http://localhost/api` ;
+export const apiUrl = `https://servicewebmaster.fr/api/web/index.php` ;
 
 
