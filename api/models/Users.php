@@ -13,7 +13,7 @@ use Yii;
  * @property string $date
  * @property string $token
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -66,7 +66,30 @@ class Users extends \yii\db\ActiveRecord
         }
     }
     
+    ////////////////////////////////////////////////////////////////////////
+    // implementation of UserIdentity interface
     
+      public static function findIdentity($id)
+    {
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne(['token' => $token]);
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+    }
+
+    public function validateAuthKey($authKey)
+    {
+    }
     
     
 }

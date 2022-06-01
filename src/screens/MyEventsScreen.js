@@ -49,6 +49,7 @@ function MyEventsScreen () {
             
             const data = new FormData();
             data.append('id', context.user.id);
+            data.append('token', context.user.token);
 
             fetch(Config.apiUrl  + link,  {
                 method: 'POST',

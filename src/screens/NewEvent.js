@@ -22,6 +22,7 @@ function NewEvent(props) {
         const data = new FormData();
         data.append('id_user', context.user.id);
         data.append('name', eventName);
+        data.append('token', context.user.token);
         
         fetch(Config.apiUrl  + '/site/add-event', {
           method: 'POST',

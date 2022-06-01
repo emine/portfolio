@@ -37,6 +37,7 @@ export default function FriendsScreen() {
         const data = new FormData();
         data.append('id', context.user.id);
         data.append('action', action) ;
+        data.append('token', context.user.token);
 
         fetch(Config.apiUrl  + '/site/friends',  {
             method: 'POST',
@@ -66,6 +67,7 @@ export default function FriendsScreen() {
         data.append('id_user', context.user.id) ;
         data.append('isFriend', users[i].isFriend) ;
         data.append('action', action) ;
+        data.append('id_user', context.user.token) ;
         
         fetch(Config.apiUrl  + '/site/update-friend',  {
             method: 'POST',

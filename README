@@ -1,6 +1,24 @@
+INSTALLATION
+------------
+on github :
+---------
+url = git@github.com:emine/portfolio.git
 
-DEPLOYMENT: VERY IMPORTANT
---------------------------
+on vercel
+---------
+
+Each time there is a new push on master, app is redeployed on vercel
+
+
+
+
+DEPLOYMENT: 
+
+
+
+
+Parameter: VERY IMPORTANT
+-------------------------
 
 1) if not installed at domain root directory 
       <BrowserRouter basename="/portfolio">

@@ -55,6 +55,20 @@ class TestController extends Controller {
         exit(json_encode(['success' => true, 'message' => 'Yo'])) ;
     }
     
+    
+      public function actionTestSession() {
+        $session = Yii::$app->session;
+        echo 'Time out: ' . $session->timeout . '<br>';
+        echo 'useCookies: ' . $session->useCookies . '<br>';
+        echo 'cookieParams: ' . json_encode($session->cookieParams) . '<br>';
+        echo 'userId: ' . (Yii::$app->user->identity ? Yii::$app->user->identity->getId() : "null")  . '<br>';
+        echo 'authTimeout: ' . (Yii::$app->user ? Yii::$app->user->authTimeout : "null")  . '<br>';
+        echo 'enableSession: ' . (Yii::$app->user ? Yii::$app->user->enableSession : "null")  . '<br>';
+        
+        
+        
+    }
+    
 }
     
     

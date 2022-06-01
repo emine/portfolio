@@ -54,13 +54,15 @@ function LoginScreen()  {
             console.log(res) ;
             if (res.success) {
                 const id = res.data[0].id ;
+                const token = res.data[0].token ;
                 
                 setMessage("") ; // this must be done BEFORE storeData() as storeDate will lead to a navigate which will unmount the component 
                 if (id > 0) {
-                    const jsonValue = JSON.stringify({name: name, password: password, id: id}) ;
+                    let user = {name: name, password: password, id: id, token:token}
+                    const jsonValue = JSON.stringify(user) ;
                     localStorage.setItem('user', jsonValue) ;
                     // set context
-                    context.setUser({name: name, password: password, id: id});
+                    context.setUser(user);
                     navigate('/');
                 }
             } else {

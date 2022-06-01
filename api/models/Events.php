@@ -55,7 +55,7 @@ class Events extends \yii\db\ActiveRecord
                 $photo->delete() ;
             }
             
-            $event->delete() ;
+            $this->delete() ;
 
             } catch (Exception $e) {
                 return ['success' => false, 'error' => $e->getMessage()] ; 

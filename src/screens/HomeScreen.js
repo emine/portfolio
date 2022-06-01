@@ -46,6 +46,7 @@ function HomeScreen()  {
             
             const data = new FormData();
             data.append('id', context.user.id);
+            data.append('token', context.user.token);
 
             fetch(Config.apiUrl  + '/site/unregister', {
               method: 'POST',
@@ -57,7 +58,7 @@ function HomeScreen()  {
                 if (res.success) {
                     logout() ;
                 } else {
-                    console.log(res.error) ;
+                    alert(res.error) ;
                 }
             })
         } catch(e) {

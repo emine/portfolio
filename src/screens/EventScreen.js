@@ -27,6 +27,7 @@ function EventScreen() {
         
         const data = new FormData();
         data.append('id', context.event.id);
+        data.append('token', context.user.token);
 
         fetch(Config.apiUrl  + '/site/pictures',  {
             method: 'POST',
@@ -77,6 +78,7 @@ function EventScreen() {
     const deleteEvent = () => { 
         const data = new FormData();
         data.append('id', context.event.id);
+        data.append('token', context.user.token);
 
         fetch(Config.apiUrl  + '/site/delete-event',  {
             method: 'POST',
@@ -88,7 +90,7 @@ function EventScreen() {
             if (res.success) {
                navigate('/my_events/' + context.type )
             } else {
-                console.log(res.error) ;
+                alert(res.error) ;
             }
         })
     }

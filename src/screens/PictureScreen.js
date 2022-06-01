@@ -22,6 +22,7 @@ function PictureScreen() {
     const createFormData = () => {
         const data = new FormData();
         data.append('photo', image);
+        data.append('token', context.user.token);
         console.log('context.event') ;
         console.log(context.event) ;
         Object.keys(context.event).forEach((key) => {
