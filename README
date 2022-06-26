@@ -1,21 +1,27 @@
-INSTALLATION
-------------
+INSTALLATION PROD
+-----------------
 on github :
 ---------
 url = git@github.com:emine/portfolio.git
 
-on vercel
+using vercel
 ---------
-
 Each time there is a new push on master, app is redeployed on vercel
 
+https://portfolio-sigma-bay-65.vercel.app/
 
 
+INSTALLATION LOCAL
+------------------
+see Config.js to switch environment  
 
-DEPLOYMENT: 
 
+WORK ON SECURITY
+----------------
+always add user token to each fetch request 
+DONE
 
-
+--------------------------------------------------------------------------------------------------------
 
 Parameter: VERY IMPORTANT
 -------------------------
